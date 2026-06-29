@@ -1,0 +1,306 @@
+```html
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FIFA Score Live</title>
+    <meta name="description" content="Professional football score dashboard for live matches, fixtures, and standings." />
+    <style>
+      :root{
+        --bg:#06111f;
+        --card:rgba(14,24,39,.92);
+        --line:#1f3350;
+        --text:#f2f7ff;
+        --muted:#9cb1cd;
+        --accent:#32e08b;
+        --accent2:#4da3ff;
+        --shadow:0 18px 60px rgba(0,0,0,.30);
+        --radius:22px;
+      }
+      *{box-sizing:border-box}
+      html,body{margin:0;padding:0}
+      body{
+        font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+        color:var(--text);
+        background:
+          radial-gradient(circle at top left, rgba(77,163,255,.18), transparent 28%),
+          radial-gradient(circle at top right, rgba(50,224,139,.14), transparent 24%),
+          linear-gradient(180deg, #09101b 0%, #06111f 55%, #040b14 100%);
+        min-height:100vh;
+      }
+      .wrap{max-width:1240px;margin:0 auto;padding:22px}
+      .topbar{
+        display:flex;justify-content:space-between;align-items:center;gap:12px;
+        margin-bottom:18px;
+      }
+      .brand{display:flex;align-items:center;gap:12px}
+      .logo{
+        width:50px;height:50px;border-radius:16px;
+        background:linear-gradient(135deg,var(--accent2),var(--accent));
+        display:grid;place-items:center;color:#04111b;font-weight:900;
+        box-shadow:0 12px 34px rgba(77,163,255,.24);
+      }
+      .brand h1{margin:0;font-size:1.1rem;letter-spacing:.12em}
+      .brand p{margin:3px 0 0;color:var(--muted);font-size:.92rem}
+      .pill{
+        padding:10px 14px;border:1px solid #27405f;border-radius:999px;
+        background:rgba(11,21,36,.75);color:#dbe8ff;font-size:.92rem;
+      }
+      .hero{
+        display:grid;grid-template-columns:1.2fr .8fr;gap:18px;
+      }
+      .panel{
+        background:linear-gradient(180deg, rgba(15,26,42,.96), rgba(10,18,30,.96));
+        border:1px solid var(--line);
+        border-radius:var(--radius);
+        box-shadow:var(--shadow);
+        backdrop-filter: blur(10px);
+      }
+      .hero-main{padding:28px}
+      .hero-side{padding:22px}
+      .kicker{
+        display:inline-flex;align-items:center;gap:8px;
+        padding:8px 12px;border-radius:999px;
+        background:rgba(50,224,139,.12);
+        color:#93f3c2;font-weight:700;font-size:.9rem;
+        border:1px solid rgba(50,224,139,.22);
+      }
+      h2{
+        margin:16px 0 10px;
+        font-size:clamp(2rem,4vw,4.4rem);
+        line-height:1.02;
+        letter-spacing:-.04em;
+      }
+      .lead{
+        margin:0;color:var(--muted);line-height:1.75;
+        max-width:64ch;font-size:1.03rem;
+      }
+      .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
+      .btn{
+        border:0;border-radius:14px;padding:12px 16px;
+        font-weight:800;cursor:pointer;
+      }
+      .btn-primary{background:linear-gradient(135deg,var(--accent),#18b66c);color:#04110a}
+      .btn-secondary{background:#12233a;color:#dfebff;border:1px solid #274664}
+      .mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+      .mini{
+        background:rgba(8,16,28,.9);
+        border:1px solid var(--line);
+        border-radius:18px;
+        padding:16px;
+        text-align:center;
+      }
+      .mini b{display:block;font-size:1.6rem;margin-bottom:4px;color:var(--accent2)}
+      .mini span{color:var(--muted);font-size:.92rem}
+      .notice{
+        margin-top:14px;border-radius:18px;padding:14px 16px;
+        background:rgba(11,21,36,.92);border:1px dashed #2b4a72;
+        color:#dbe8ff;line-height:1.6;
+      }
+      .section-head{
+        display:flex;justify-content:space-between;align-items:end;gap:10px;
+        margin:28px 2px 12px;
+      }
+      .section-head h3{margin:0;font-size:1.15rem;letter-spacing:.02em}
+      .section-head span{color:var(--muted);font-size:.95rem}
+      .content-grid{display:grid;grid-template-columns:1.5fr .9fr;gap:18px}
+      .matches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+      .match{
+        background:rgba(8,16,28,.96);
+        border:1px solid var(--line);
+        border-radius:20px;
+        padding:18px;
+      }
+      .tag{
+        display:inline-flex;align-items:center;gap:8px;
+        padding:7px 10px;border-radius:999px;
+        font-size:.84rem;font-weight:800;margin-bottom:14px;
+      }
+      .live{background:rgba(50,224,139,.12);color:#89f0bb;border:1px solid rgba(50,224,139,.2)}
+      .ft{background:rgba(77,163,255,.12);color:#9dc8ff;border:1px solid rgba(77,163,255,.2)}
+      .upcoming{background:rgba(255,255,255,.05);color:#dce7fb;border:1px solid rgba(255,255,255,.08)}
+      .match-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+      .teams{font-size:1.05rem;font-weight:800;line-height:1.35}
+      .score{
+        font-size:2rem;font-weight:900;letter-spacing:-.04em;
+        color:var(--accent2);flex:0 0 auto;
+      }
+      .meta{margin-top:10px;color:var(--muted);font-size:.94rem;line-height:1.55}
+      .sidebar{display:grid;gap:16px}
+      .card{
+        background:rgba(8,16,28,.96);
+        border:1px solid var(--line);
+        border-radius:20px;
+        padding:18px;
+      }
+      .card h4{margin:0 0 12px;font-size:1rem}
+      .table{width:100%;border-collapse:collapse;overflow:hidden}
+      .table th,.table td{
+        text-align:left;padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.06);
+        font-size:.95rem;
+      }
+      .table th{color:#bfd0ea;font-weight:700}
+      .table td{color:#eaf2ff}
+      .table tr:last-child td{border-bottom:none}
+      .rank{
+        display:inline-grid;place-items:center;width:26px;height:26px;
+        border-radius:8px;background:#12253c;border:1px solid #23405f;
+        color:#dbe8ff;font-size:.86rem;font-weight:700;
+      }
+      .footer{
+        text-align:center;color:#89a4c8;font-size:.92rem;margin:30px 0 10px;
+      }
+      @media (max-width:1024px){
+        .hero,.content-grid{grid-template-columns:1fr}
+        .matches{grid-template-columns:1fr}
+      }
+      @media (max-width:640px){
+        .wrap{padding:14px}
+        .hero-main,.hero-side,.card,.match{padding:16px}
+        .topbar{flex-direction:column;align-items:flex-start}
+        .mini-grid{grid-template-columns:1fr}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo">FS</div>
+          <div>
+            <h1>FIFA SCORE LIVE</h1>
+            <p>Professional football dashboard</p>
+          </div>
+        </div>
+        <div class="pill" id="updatedAt">Updated now</div>
+      </div>
+
+      <section class="hero">
+        <div class="panel hero-main">
+          <div class="kicker">Premium football experience</div>
+          <h2>Easy to watch live scores with a clean, modern layout.</h2>
+          <p class="lead">
+            This is a polished football score website starter. It uses a large score focus, balanced spacing, and a mobile-friendly layout for a professional feel.
+          </p>
+          <div class="actions">
+            <button class="btn btn-primary" onclick="loadSample()">Load Match Cards</button>
+            <button class="btn btn-secondary" onclick="toggleTheme()">Toggle Accent</button>
+          </div>
+        </div>
+
+        <div class="panel hero-side">
+          <div class="mini-grid">
+            <div class="mini"><b id="liveCount">3</b><span>Live</span></div>
+            <div class="mini"><b id="upcomingCount">3</b><span>Upcoming</span></div>
+            <div class="mini"><b>HD</b><span>Focus view</span></div>
+          </div>
+          <div class="notice" id="notice">
+            Fast overview, less clutter, and stronger readability for fans who want scores at a glance.
+          </div>
+        </div>
+      </section>
+
+      <div class="section-head">
+        <h3>Live & Recent Matches</h3>
+        <span>Sample scoreboard cards</span>
+      </div>
+
+      <section class="content-grid">
+        <div class="matches" id="matches"></div>
+
+        <aside class="sidebar">
+          <div class="card">
+            <h4>Mini standings</h4>
+            <table class="table">
+              <thead>
+                <tr><th>Pos</th><th>Team</th><th>Pts</th></tr>
+              </thead>
+              <tbody id="standings"></tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <h4>Why this looks better</h4>
+            <table class="table">
+              <tbody>
+                <tr><td>Big score area</td><td>Easy to scan</td></tr>
+                <tr><td>Less clutter</td><td>Cleaner view</td></tr>
+                <tr><td>Strong contrast</td><td>Readable</td></tr>
+                <tr><td>Responsive grid</td><td>Mobile friendly</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </aside>
+      </section>
+
+      <div class="footer">Publish free on GitHub Pages after uploading index.html.</div>
+    </div>
+
+    <script>
+      const data = [
+        {home:"Argentina", away:"Brazil", score:"2 - 1", status:"80' Live", type:"live", meta:"High intensity match · second half"},
+        {home:"France", away:"Germany", score:"0 - 0", status:"HT", type:"live", meta:"Balanced game · halftime"},
+        {home:"Spain", away:"Portugal", score:"3 - 2", status:"FT", type:"ft", meta:"Full time result · thriller"},
+        {home:"Japan", away:"Korea", score:"-", status:"Tomorrow", type:"upcoming", meta:"Kickoff soon · upcoming fixture"},
+        {home:"England", away:"Italy", score:"-", status:"Tomorrow", type:"upcoming", meta:"Classic rivalry · next match"},
+        {home:"Morocco", away:"Senegal", score:"-", status:"Tomorrow", type:"upcoming", meta:"Group stage demo · scheduled"}
+      ];
+
+      const standings = [
+        ["1", "Argentina", "18"],
+        ["2", "France", "16"],
+        ["3", "Spain", "15"],
+        ["4", "Brazil", "14"]
+      ];
+
+      function tag(type){
+        return type === "live" ? "LIVE" : type === "ft" ? "FULL TIME" : "UPCOMING";
+      }
+
+      function render(){
+        document.getElementById("matches").innerHTML = data.map(m => `
+          <article class="match">
+            <div class="tag ${m.type}">${tag(m.type)}</div>
+            <div class="match-top">
+              <div class="teams">${m.home}<br>vs<br>${m.away}</div>
+              <div class="score">${m.score}</div>
+            </div>
+            <div class="meta">${m.status}</div>
+            <div class="meta">${m.meta}</div>
+          </article>
+        `).join("");
+
+        document.getElementById("standings").innerHTML = standings.map(([pos, team, pts]) => `
+          <tr><td><span class="rank">${pos}</span></td><td>${team}</td><td>${pts}</td></tr>
+        `).join("");
+
+        document.getElementById("liveCount").textContent = data.filter(x => x.type === "live").length;
+        document.getElementById("upcomingCount").textContent = data.filter(x => x.type === "upcoming").length;
+        document.getElementById("updatedAt").textContent =
+          "Updated " + new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+      }
+
+      function loadSample(){ render(); }
+
+      function toggleTheme(){
+        const root = document.documentElement.style;
+        const current = getComputedStyle(document.documentElement).getPropertyValue("--accent2").trim();
+        if(current === "#4da3ff"){
+          root.setProperty("--accent2", "#ffcc33");
+          root.setProperty("--accent", "#ff6b6b");
+        } else {
+          root.setProperty("--accent2", "#4da3ff");
+          root.setProperty("--accent", "#32e08b");
+        }
+      }
+
+      render();
+      setInterval(() => {
+        document.getElementById("updatedAt").textContent =
+          "Updated " + new Date().toLocaleTimeString([], {hour:"2-digit", minute:"2-digit"});
+      }, 60000);
+    </script>
+  </body>
+</html>
+```
